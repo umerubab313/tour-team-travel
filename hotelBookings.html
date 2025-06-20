@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Hotel - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container nav-container">
+    <a href="index.html" class="logo">Tour Team</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="hotels.html">Hotels</a></li>
+      <li><a href="restaurants.html">Restaurants</a></li>
+      <li><a href="tourist_spots.html">Tourist Spots</a></li>
+      <li><a href="guides.html">Guides</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Booking Form -->
+<div class="booking-bg">
+  <div class="booking-form-container">
+    <h2>Book Your Stay</h2>
+    <div id="hotel-details">
+      <p><strong>Hotel:</strong> <span id="hotel-name">Loading...</span></p>
+      <p><strong>Fee/Night:</strong> €<span id="hotel-fee">...</span></p>
+    </div>
+    <form id="bookingForm">
+      <input type="date" id="checkin-date" required />
+      <input type="time" id="checkin-time" required />
+      <input type="number" id="nights" placeholder="Number of Nights" min="1" required />
+      <input type="number" id="rooms" placeholder="Number of Rooms" min="1" required />
+      <input type="text" id="total-cost" readonly />
+      <button type="submit" class="btn-confirm">Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
+<!-- Confirmation -->
+<div id="confirmation" class="modal hidden">
+  <div class="modal-content">
+    <h2>✅ Booking Confirmed!</h2>
+    <p id="confirm-details"></p>
+    <div class="modal-buttons">
+      <a href="hotels.html" class="btn-back">← Back to Hotels</a>
+      <a href="index.html" class="btn-home">🏠 Go to Home</a>
+    </div>
+  </div>
+</div>
+
+<script>
+if (!localStorage.getItem('isLoggedIn') || !localStorage.getItem('userId')) {
+      alert("You must be logged in to make a reservation.");
+      window.location.href = 'auth.html';
+  }
+let hotel = null;
+
+const hotelId = new URLSearchParams(window.location.search).get("hotelId");
+if (!hotelId) alert("Hotel ID not found.");
+
+function loadHotel() {
+fetch(`http://localhost:5000/api/hotels/${hotelId}`)
+    .then(res => res.json())
+    .then(data => {
+      hotel = data;
+      document.getElementById("hotel-name").textContent = hotel.name;
+      document.getElementById("hotel-fee").textContent = hotel.feePerNight;
+    });
+}
+
+function calculateCost() {
+  const nights = parseInt(document.getElementById("nights").value);
+  const rooms = parseInt(document.getElementById("rooms").value);
+  if (hotel && nights && rooms) {
+    const total = nights * rooms * hotel.feePerNight;
+    document.getElementById("total-cost").value = `€${total}`;
+    return total;
+  }
+  return null;
+}
+
+document.getElementById("bookingForm").addEventListener("change", calculateCost);
+
+document.getElementById("bookingForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const nights = parseInt(document.getElementById("nights").value);
+  const rooms = parseInt(document.getElementById("rooms").value);
+  const bookingDate = document.getElementById("checkin-date").value;
+  const bookingTime = document.getElementById("checkin-time").value;
+  const feePerNight = hotel.feePerNight;
+  const cost = feePerNight * nights * rooms;
+
+fetch(`http://localhost:5000/api/bookings/hotels`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user: localStorage.getItem("userId"),
+      hotel: hotel._id,
+      bookingDate,
+      bookingTime,
+      nights,
+      rooms,
+      feePerNight,
+      cost
+    })
+  }).then(res => {
+    if (res.ok) {
+      document.getElementById("confirm-details").innerHTML = `
+        <strong>Hotel:</strong> ${hotel.name}<br>
+        <strong>Check-in:</strong> ${bookingDate} at ${bookingTime}<br>
+        <strong>Nights:</strong> ${nights}<br>
+        <strong>Rooms:</strong> ${rooms}<br>
+        <strong>Total:</strong> €${cost}
+      `;
+      document.getElementById("confirmation").classList.remove("hidden");
+    } else {
+      alert("Booking failed.");
+    }
+  });
+});
+
+loadHotel();
+</script>
+
+</body>
+</html>

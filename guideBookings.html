@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Book Guide - Tour Team</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">Tour Team</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="restaurants.html">Restaurants</a></li>
+        <li><a href="tourist_spots.html">Tourist Spots</a></li>
+        <li><a href="guides.html">Guides</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Booking Form -->
+  <div class="booking-bg">
+    <div class="booking-form-container">
+      <h2>Book Your Guide</h2>
+
+      <div id="guide-details">
+        <p><strong>Guide:</strong> <span id="guide-name">Loading…</span></p>
+        <p><strong>Fee per trip:</strong> €<span id="guide-fee">…</span></p>
+      </div>
+
+      <form id="bookingForm">
+        <input type="date" id="booking-date" required/>
+        <input type="time" id="booking-time" required/>
+        <button type="submit" class="btn-confirm">Confirm Booking</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmation" class="modal hidden">
+    <div class="modal-content">
+      <h2>✅ Booking Confirmed!</h2>
+      <p id="confirm-details"></p>
+      <div class="modal-buttons">
+        <a href="guides.html" class="btn-back">← Back to Guides</a>
+        <a href="index.html" class="btn-home">🏠 Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (!localStorage.getItem('isLoggedIn') || !localStorage.getItem('userId')) {
+      alert("You must be logged in to make a reservation.");
+      window.location.href = 'auth.html';
+  }
+    let guide = null;
+
+    const guideId = new URLSearchParams(window.location.search).get("guideId");
+    if (!guideId) alert("Guide ID not found.");
+    
+
+    function loadGuide() {
+      fetch(`http://localhost:5000/api/guides/${guideId}`) // expects city param but returns all if empty
+        .then(r => r.json())
+        .then(data => {
+          guide = data;
+          if (!guide) return alert('Guide not found');
+          document.getElementById('guide-name').textContent = guide.name;
+          document.getElementById('guide-fee').textContent = guide.feePerTrip;
+        });
+    }
+
+
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const date = document.getElementById('booking-date').value;
+      const time = document.getElementById('booking-time').value;
+      const feePerTrip = guide.feePerTrip;
+      fetch('http://localhost:5000/api/bookings/guides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user: localStorage.getItem("userId"),   // replace with real user logic
+          item: guideId,
+          bookingDate: date,
+          bookingTime: time,
+          feePerTrip
+        })
+      }).then(res => {
+        if (res.ok) {
+          document.getElementById('confirm-details').innerHTML = `
+            <strong>Guide:</strong> ${guide.name}<br>
+            <strong>Date:</strong> ${date}<br>
+            <strong>Time:</strong> ${time}<br>
+            <strong>Fee:</strong> €${guide.feePerTrip}
+          `;
+          document.getElementById('confirmation').classList.remove('hidden');
+        } else {
+          alert('Booking failed.');
+        }
+      });
+    });
+
+    loadGuide();
+  </script>
+
+</body>
+</html>

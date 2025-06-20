@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Navigation with search bar and login -->
+<header class="nav-bar">
+  <div class="container nav-container">
+    <div class="logo">TOUR TEAM</div>
+    <form class="search-form" action="destination.html" method="GET">
+      <input
+        type="text"
+        name="city"
+        placeholder="Where to?"
+        required
+        aria-label="Search destination"
+      />
+      <button type="submit" style="margin-right: 10px;">Search</button>
+
+      <button onclick="window.location.href='adminLogin.html'">Admin Login</button>
+
+      <!-- <a href="adminLogin.html">Login As Admin</a> -->
+    </form>
+    <!-- <a href="auth.html" class="btn-login">Login</a> -->
+  </div>
+</header>
+
+  <!-- Hero Section -->
+    <div class="hero-video-container">
+  <video autoplay muted loop playsinline>
+    <source src="images/video.mp4" type="video/mp4">
+    <source src="images/video.ogg" type="video/ogg">
+    Your browser does not support the video tag.
+  </video>
+  <div class="hero-overlay">
+    <h1>Explore the World</h1>
+    <p>Discover your next amazing destination</p>
+  </div>
+</div>
+
+  <!-- About Section -->
+  <section class="about-section container">
+    <div class="about-text">
+      <h3>EXPLORE THE WORLD</h3>
+      <h2>Your ultimate travel companion</h2>
+      <p>
+        At Tour Team, we believe that every journey should be an adventure filled with unforgettable experiences.
+        Our platform connects you with the world's most popular restaurants, hotels, tourist spots, and expert tour guides.
+        Whether you're planning a weekend getaway or a grand vacation, we provide all the resources you need to make your travel seamless and enjoyable.
+        Discover new destinations, taste local flavors, and create memories that will last a lifetime with Tour Team.
+      </p>
+      <a href="#" class="link">Get in touch</a>
+    </div>
+    <div class="about-image-placeholder">
+      <img src="images/centre.jpeg" alt="Restaurants" class="image-placeholder-text">
+      <!-- <div class="image-placeholder-text">[Image Placeholder]</div> -->
+    </div>
+  </section>
+
+  <!-- Services Preview Section -->
+  <section class="services-preview container">
+    <h3>EXPLORE THE WORLD</h3>
+    <h2>Your ultimate travel companion</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card-image-placeholder">
+          <img src="images/restaurant.jpg" alt="Restaurants" class="card-image">
+        </div>
+        <h3>Restaurant recommendations &gt;</h3>
+        <p>Discover the best dining experiences in your destination.</p>
+      </div>
+      <div class="card">
+        <div class="card-image-placeholder">
+          <img src="images/hotels.jpg" alt="hotels" class="card-image">
+        </div>
+        <h3>Hotel listings &gt;</h3>
+        <p>Find the perfect place to stay in any city.</p>
+      </div>
+      <div class="card">
+        <div class="card-image-placeholder">
+          <img src="images/tourGuide.jpg" alt="Tour guide" class="card-image">
+        </div>
+        <h3>Tour guide services &gt;</h3>
+        <p>Connect with knowledgeable local guides for an authentic experience.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works container">
+    <h4>DISCOVER YOUR ADVENTURE</h4>
+    <h2>Find the best spots for your journey</h2>
+    <div class="how-cards">
+      <div class="how-card">
+        <!-- <div class="how-image-placeholder"> -->
+          <!-- <div class="image-placeholder-text">[Popular Restaurant Image]</div> -->
+          <img src="images/topRestaurantpng.png" alt="Popular Restaurants" class="famous-spot-card">
+        <!-- </div> -->
+        <h3>Explore popular restaurants</h3>
+        <p>Discover the best dining options for an unforgettable culinary experience.</p>
+        <!-- <a href="#" class="link">Learn more</a> -->
+      </div>
+      <div class="how-card">
+        <!-- <div class="how-image-placeholder"> -->
+          <!-- <div class="image-placeholder-text">[Top Hotels Image]</div> -->
+          <img src="images/topHotels.jpg" alt="Top Hotels" class="famous-spot-card">
+        <!-- </div> -->
+        <h3>Find top hotels</h3>
+        <p>Book your stay in top-rated hotels tailored to your preferences.</p>
+        <!-- <a href="#" class="link">Learn more</a> -->
+      </div>
+    </div>
+    <div class="contact-container">
+  <section class="contact-form-section"> 
+    <h5>GET IN TOUCH</h5>
+      <h2>We'd love to hear from you!</h2>
+      <form class="contact-form" action="#" method="POST">
+        <label for="name">Name *</label>
+        <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+
+        <label for="email">Email address *</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="email@website.com"
+          required
+        />
+
+        <label for="phone">Phone number *</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="555-555-5555"
+          required
+        />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4"></textarea>
+
+        <label class="checkbox-label">
+          <input type="checkbox" required />
+          I allow this website to store my submission so they can respond to my inquiry. *
+        </label>
+
+        <button type="submit" class="btn-primary">Submit</button>
+      </form> </section>
+</div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="#">Schedule Appointment</a>
+      <a href="#">Complete Intake</a>
+      <a href="#">FAQ</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </footer>
+<script>
+// Highlight active nav link based on current URL or click
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Responsive mobile nav toggle
+const nav = document.querySelector('nav');
+const navLinks = document.querySelector('.nav-links');
+const toggleBtn = document.createElement('button');
+toggleBtn.className = 'nav-toggle';
+toggleBtn.innerHTML = '&#9776;'; // hamburger icon
+
+document.querySelector('.nav-container').insertBefore(toggleBtn, nav);
+
+toggleBtn.addEventListener('click', () => {
+  navLinks.classList.toggle('nav-open');
+});
+
+// Close menu when clicking a nav link (mobile)
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navLinks.classList.remove('nav-open');
+  });
+});
+</script>
+
+
+
+
+
+</body>
+</html>

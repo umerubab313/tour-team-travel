@@ -1,0 +1,127 @@
+<!-- REPLACE your current restaurants.html content with this -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restaurants - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">Tour Team</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="tourist_spots.html">Tourist Spots</a></li>
+        <li><a href="guides.html">Guides</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero-section">
+    <div class="overlay">
+      <h1 id="city-title">Top Restaurants in City</h1>
+      <p>Explore the best places to eat in the city</p>
+    </div>
+  </section>
+
+  <!-- Sorting -->
+  <section class="sort-section container">
+    <label for="sort-select">Sort by:</label>
+    <select id="sort-select">
+      <option value="default">Default</option>
+      <option value="az">A - Z</option>
+      <option value="rating">Rating</option>
+    </select>
+  </section>
+
+  <!-- Restaurant Cards -->
+  <section class="listing-section">
+    <div class="container cards-grid" id="restaurants-container">
+      <!-- Cards will be injected here -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <p><strong>Tour Team</strong><br/>Your trusted travel companion.<br/>© 2025 Tour Team. All rights reserved.</p>
+    </div>
+  </footer>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city') || 'Paris';
+
+  document.getElementById('city-title').textContent = `Top Restaurants in ${city}`;
+  document.getElementById('hero-section').style.backgroundImage = `url('https://source.unsplash.com/1600x600/?${city},restaurant')`;
+
+  const container = document.getElementById('restaurants-container');
+  const sortSelect = document.getElementById('sort-select');
+  let restaurants = [];
+
+  function renderRestaurants(data) {
+    container.innerHTML = '';
+    data.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${r.image || 'https://via.placeholder.com/400x250'}" alt="${r.name}" />
+        <div class="card-body">
+          <h3>${r.name}</h3>
+          <p class="rating">⭐ ${r.rating || '4.0'}</p>
+          <p><strong>Cuisine:</strong> ${r.cuisine || 'N/A'}</p>
+          <p>${r.description || 'No description available.'}</p>
+          <a href="#" class="book-button" onclick="startBooking('${r._id}', 'restaurant')">Book Now</a>
+          <div class="review-link">
+          <a href="restaurantReviews.html?restaurantId=${r._id}&city=${encodeURIComponent(city)}">Add Your Review</a>
+
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function sortAndRender(criteria) {
+    let sorted = [...restaurants];
+    if (criteria === 'az') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (criteria === 'rating') {
+      sorted.sort((a, b) => b.rating - a.rating);
+    }
+    renderRestaurants(sorted);
+  }
+  function startBooking(id, type) {
+  // Save booking context to localStorage
+  localStorage.setItem('pendingBookingType', type); // restaurant, hotel, or guide
+  localStorage.setItem('pendingBookingId', id);
+  localStorage.setItem('pendingCity', city); // already defined in your script
+  // Redirect to auth page
+  window.location.href = 'auth.html';
+}
+
+
+  sortSelect.addEventListener('change', e => sortAndRender(e.target.value));
+
+  async function loadRestaurants() {
+    try {
+      const res = await fetch(`http://localhost:5000/api/restaurants?city=${encodeURIComponent(city)}`);
+      restaurants = await res.json();
+      renderRestaurants(restaurants);
+    } catch (err) {
+      container.innerHTML = '<p>Unable to load restaurants. Please try again later.</p>';
+    }
+  }
+
+  loadRestaurants();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookings - Admin - Tour Team</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+ <!-- Sidebar -->
+<div class="admin-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>Tour Team</h2>
+    <span class="toggle-btn" onclick="toggleSidebar()">✖</span>
+  </div>
+  <ul class="sidebar-links">
+    <li><a href="adminDashboard.html">Dashboard</a></li>
+    <li><a href="adminAddHotels.html">Add Hotels</a></li>
+    <li><a href="adminAddRestaurants.html">Add Restaurants</a></li>
+    <li><a href="adminAddGuides.html">Add Guides</a></li>
+    <li><a href="adminAddSpots.html">Add Tourist Spots</a></li>
+    <li><a href="adminBookings.html">Bookings</a></li>
+    <li><a href="adminAnalytics.html">Analytics</a></li>
+    <li><a href="adminEarnings.html">Earnings</a></li>
+  </ul>
+</div>
+
+<!-- Persistent Toggle Button -->
+<button id="openSidebar" class="open-sidebar-btn" onclick="toggleSidebar()">☰</button>
+
+
+  <!-- Main Content -->
+  <main class="bookings-dashboard">
+    <h2>Bookings Overview</h2>
+
+    <div class="bookings-container">
+
+      <!-- Hotel Bookings Table -->
+      <div class="booking-card">
+        <h3>Hotel Bookings</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Hotel Name</th>
+              <th>City</th>
+              <th>Total Bookings</th>
+            </tr>
+          </thead>
+          <tbody id="hotelBookingsTable">
+            <!-- Data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Restaurant Bookings Table -->
+      <div class="booking-card">
+        <h3>Restaurant Bookings</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Restaurant Name</th>
+              <th>City</th>
+              <th>Total Bookings</th>
+            </tr>
+          </thead>
+          <tbody id="restaurantBookingsTable">
+            <!-- Data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Guide Bookings Table -->
+      <div class="booking-card">
+        <h3>Guide Bookings</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Guide Name</th>
+              <th>City</th>
+              <th>Total Bookings</th>
+            </tr>
+          </thead>
+          <tbody id="guideBookingsTable">
+            <!-- Data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+
+      function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+
+    const openBtn = document.getElementById('openSidebar');
+    if (sidebar.classList.contains('collapsed')) {
+      openBtn.style.display = 'block';
+    } else {
+      openBtn.style.display = 'none';
+    }
+  }
+
+  // Hide the button initially
+  window.onload = () => {
+    document.getElementById('openSidebar').style.display = 'none';
+  };
+    async function fetchBookingsData() {
+      try {
+        const response = await fetch('http://localhost:5000/api/admin/bookings');
+        const data = await response.json();
+
+        // Populate Hotel Bookings Table
+        const hotelTable = document.getElementById('hotelBookingsTable');
+        data.hotelBookings.forEach(hotel => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${hotel.name}</td>
+            <td>${hotel.city}</td>
+            <td>${hotel.totalBookings}</td>
+          `;
+          hotelTable.appendChild(row);
+        });
+
+        // Populate Restaurant Bookings Table
+        const restaurantTable = document.getElementById('restaurantBookingsTable');
+        data.restaurantBookings.forEach(restaurant => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${restaurant.name}</td>
+            <td>${restaurant.city}</td>
+            <td>${restaurant.totalBookings}</td>
+          `;
+          restaurantTable.appendChild(row);
+        });
+
+        // Populate Guide Bookings Table
+        const guideTable = document.getElementById('guideBookingsTable');
+        data.guideBookings.forEach(guide => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${guide.name}</td>
+            <td>${guide.city}</td>
+            <td>${guide.totalBookings}</td>
+          `;
+          guideTable.appendChild(row);
+        });
+
+      } catch (error) {
+        console.error('Error fetching bookings data:', error);
+      }
+    }
+
+    fetchBookingsData();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Earnings - Admin - Tour Team</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+ <!-- Sidebar -->
+<div class="admin-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>Tour Team</h2>
+    <span class="toggle-btn" onclick="toggleSidebar()">✖</span>
+  </div>
+  <ul class="sidebar-links">
+    <li><a href="adminDashboard.html">Dashboard</a></li>
+    <li><a href="adminAddHotels.html">Add Hotels</a></li>
+    <li><a href="adminAddRestaurants.html">Add Restaurants</a></li>
+    <li><a href="adminAddGuides.html">Add Guides</a></li>
+    <li><a href="adminAddSpots.html">Add Tourist Spots</a></li>
+    <li><a href="adminBookings.html">Bookings</a></li>
+    <li><a href="adminAnalytics.html">Analytics</a></li>
+    <li><a href="adminEarnings.html">Earnings</a></li>
+  </ul>
+</div>
+
+<!-- Persistent Toggle Button -->
+<button id="openSidebar" class="open-sidebar-btn" onclick="toggleSidebar()">☰</button>
+
+
+  <!-- Main Content -->
+  <main class="earnings-dashboard">
+    <h2>Monthly Earnings Summary</h2>
+
+    <div class="date-selector">
+      <select id="monthSelect">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4" selected>April</option>
+        <option value="5">May</option>
+        <!-- Add up to December -->
+      </select>
+      <input type="number" id="yearInput" value="2025" min="2023" max="2100" />
+      <button id="fetchBtn">Show Earnings</button>
+    </div>
+
+    <div class="earnings-grid" id="earningsGrid">
+      <!-- Earnings cards injected here -->
+    </div>
+  </main>
+
+  <script>
+    const grid = document.getElementById('earningsGrid');
+    const fetchBtn = document.getElementById('fetchBtn');
+
+      function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+
+    const openBtn = document.getElementById('openSidebar');
+    if (sidebar.classList.contains('collapsed')) {
+      openBtn.style.display = 'block';
+    } else {
+      openBtn.style.display = 'none';
+    }
+  }
+
+  // Hide the button initially
+  window.onload = () => {
+    document.getElementById('openSidebar').style.display = 'none';
+  };
+
+    function renderCard(title, value, icon) {
+      return `
+        <div class="earning-card">
+          <h4>${title}</h4>
+          <p class="amount">€${value}</p>
+        </div>
+      `;
+    }
+
+    async function fetchEarnings() {
+      const month = document.getElementById('monthSelect').value;
+      const year = document.getElementById('yearInput').value;
+      grid.innerHTML = '<p>Loading...</p>';
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/earnings?month=${month}&year=${year}`);
+        const data = await res.json();
+
+        const { hotel, restaurant, guide, total } = data.earnings;
+
+        grid.innerHTML = `
+          ${renderCard('Hotel Earnings', hotel)}
+          ${renderCard('Restaurant Earnings', restaurant)}
+          ${renderCard('Guide Earnings', guide)}
+          ${renderCard('Total Platform Earnings', total)}
+        `;
+      } catch (err) {
+        grid.innerHTML = '<p style="color:red">Failed to fetch earnings. Check server connection.</p>';
+      }
+    }
+
+    fetchBtn.addEventListener('click', fetchEarnings);
+
+    // Load default on page load
+    fetchEarnings();
+  </script>
+
+</body>
+</html>

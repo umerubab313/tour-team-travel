@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotels in Istanbul | TOUR TEAM</title>
+  <link rel="stylesheet" href="categoryhotels.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet"/>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">TOUR <span class="magenta">TEAM</span></div>
+    <div class="nav-right">
+      <a href="index.html">Home</a>
+      <a href="auth.html">Login</a>
+    </div>
+  </header>
+
+  <section class="results-header">
+    <h1>Top Hotels in <span class="magenta">Istanbul</span></h1>
+    <p>These stays are loved by travelers. Check the ratings and share your own!</p>
+  </section>
+
+  <section class="result-grid">
+    <!-- Each card will be a DB entry later -->
+    <div class="result-card">
+      <img src="hotel1.jpg" alt="Hotel" />
+      <div class="result-info">
+        <h3>Skyview Hotel</h3>
+        <p class="desc">Modern hotel with rooftop views of Hagia Sophia. Perfect for couples & families.</p>
+        <div class="rating">⭐ 4.5 (26 reviews)</div>
+        <button onclick="requireLogin()">Add Your Rating</button>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <img src="hotel2.jpg" alt="Hotel" />
+      <div class="result-info">
+        <h3>Magenta Suites</h3>
+        <p class="desc">Chic pastel-themed boutique hotel near Blue Mosque and Grand Bazaar.</p>
+        <div class="rating">⭐ 4.7 (41 reviews)</div>
+        <button onclick="requireLogin()">Add Your Rating</button>
+      </div>
+    </div>
+
+    <!-- Add more hotel cards as needed -->
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 TOUR TEAM</p>
+  </footer>
+
+  <script>
+    function requireLogin() {
+      alert("Please login to add your rating!");
+      // Redirect to login later or show modal
+    }
+  </script>
+
+</body>
+</html>

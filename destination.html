@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Destinations | Tour Team</title>
+  <link rel="stylesheet" href="destination.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">TOUR TEAM</div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+      <a href="#" class="btn-outline" style="margin-right: 10px;">CONTACT</a>
+      <button onclick="window.location.href='adminLogin.html'" class="btn-outline">Admin Login</button>
+    </div>
+  </header>
+
+  <!-- Page Intro Text -->
+  <section class="page-intro">
+    <h2>Explore the top places in your selected city</h2>
+    <p>Here are the best tourist spots, restaurants, hotels, and guides based on your search.</p>
+  </section>
+
+  <!-- Tourist Spots -->
+  <section class="category-section pink">
+    <div class="content">
+      <img src="/images/optionsSpot.jpg" alt="Tourist Spot" />
+      <div class="text">
+        <h2>Tourist Attractions</h2>
+        <p>Discover breathtaking tourist spots that define every destination.</p>
+        <a id="spots-link" class="btn">View Tourist Spots</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Restaurants -->
+  <section class="category-section purple">
+    <div class="content">
+      <img src="/images/optionsRestaurant.jpg" alt="Restaurant" />
+      <div class="text">
+        <h2>Restaurant Recommendations</h2>
+        <p>Find the best places to dine with local and global flavors.</p>
+        <a id="restaurants-link" class="btn">View Restaurants</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tour Guides -->
+  <section class="category-section blue">
+    <div class="content">
+      <img src="/images/optionsTourGuide.jpg" alt="Tour Guide" />
+      <div class="text">
+        <h2>Tour Guide Services</h2>
+        <p>Connect with knowledgeable guides to explore like a local.</p>
+        <a id="guides-link" class="btn">View Tour Guides</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hotels -->
+  <section class="category-section pink">
+    <div class="content">
+      <img src="/images/optionsHotel.jpg" alt="Hotel" />
+      <div class="text">
+        <h2>Hotel Listings</h2>
+        <p>Choose from a variety of accommodations that suit your comfort and budget.</p>
+        <a id="hotels-link" class="btn">View Hotels</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Tour Team. All rights reserved.</p>
+      <p>Follow us on 
+        <a href="#">Instagram</a> | 
+        <a href="#">Twitter</a> | 
+        <a href="#">Facebook</a>
+      </p>
+    </div>
+  </footer>
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city');
+
+  if (city) {
+    document.getElementById('spots-link').href = `tourist_spots.html?city=${encodeURIComponent(city)}`;
+    document.getElementById('restaurants-link').href = `restaurants.html?city=${encodeURIComponent(city)}`;
+    document.getElementById('guides-link').href = `guides.html?city=${encodeURIComponent(city)}`;
+    document.getElementById('hotels-link').href = `hotels.html?city=${encodeURIComponent(city)}`;
+  }
+</script>
+
+
+
+</body>
+</html>

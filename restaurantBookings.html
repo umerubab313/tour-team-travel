@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Restaurant - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">Tour Team</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="restaurants.html">Restaurants</a></li>
+        <li><a href="tourist_spots.html">Tourist Spots</a></li>
+        <li><a href="guides.html">Guides</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Booking Form -->
+  <div class="booking-bg">
+    <div class="booking-form-container">
+      <h2>Reserve Your Table</h2>
+
+      <div id="restaurant-details">
+        <p><strong>Restaurant:</strong> <span id="rest-name">Loading…</span></p>
+        <p><strong>City:</strong> <span id="rest-city">…</span></p>
+      </div>
+
+      <form id="bookingForm">
+        <input type="date" id="booking-date" required />
+        <input type="time" id="booking-time" required />
+        <input type="number" id="guests" placeholder="Number of Guests" min="1" required />
+
+        <button type="submit" class="btn-confirm">Confirm Reservation</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmation" class="modal hidden">
+    <div class="modal-content">
+      <h2>✅ Reservation Confirmed!</h2>
+      <p id="confirm-details"></p>
+      <div class="modal-buttons">
+        <a href="restaurants.html" class="btn-back">← Back to Restaurants</a>
+        <a href="index.html" class="btn-home">🏠 Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (!localStorage.getItem('isLoggedIn') || !localStorage.getItem('userId')) {
+      alert("You must be logged in to make a reservation.");
+      window.location.href = 'auth.html';
+  }
+
+    let restaurant = null;
+    const params = new URLSearchParams(window.location.search);
+    const restId = params.get('restaurantId');
+    const city = params.get("city") || 'Paris';
+
+    function loadRestaurant() {
+    fetch(`http://localhost:5000/api/restaurants/${restId}`)
+        .then(r=>r.json())
+        .then(data=>{
+          restaurant = data;
+          document.getElementById('rest-name').textContent = data.name;
+          document.getElementById('rest-city').textContent = data.city;
+        });
+    }
+
+    document.getElementById('bookingForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const date = document.getElementById('booking-date').value;
+      const time = document.getElementById('booking-time').value;
+      const guests = parseInt(document.getElementById('guests').value);
+
+fetch(`http://localhost:5000/api/bookings/restaurants`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          user: localStorage.getItem('userId'),
+          item: restId,
+          bookingDate: date,
+          bookingTime: time,
+          guests
+        })
+      }).then(res=>{
+        if(res.ok){
+          document.getElementById('confirm-details').innerHTML = `
+            <strong>Restaurant:</strong> ${restaurant.name}<br>
+            <strong>Date:</strong> ${date}<br>
+            <strong>Time:</strong> ${time}<br>
+            <strong>Guests:</strong> ${guests}
+          `;
+          document.getElementById('confirmation').classList.remove('hidden');
+        } else {
+          alert('Reservation failed.');
+        }
+      });
+    });
+
+    loadRestaurant();
+  </script>
+</body>
+</html>

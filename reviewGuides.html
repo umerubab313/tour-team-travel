@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guide Reviews - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container nav-container">
+    <a href="index.html" class="logo">Tour Team</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="hotels.html">Hotels</a></li>
+      <li><a href="restaurants.html">Restaurants</a></li>
+      <li><a href="tourist_spots.html">Tourist Spots</a></li>
+      <li><a href="guides.html">Guides</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="container review-wrapper">
+  <div class="restaurant-info">
+    <img id="guide-img" src="https://via.placeholder.com/80" alt="">
+    <div>
+      <h2 id="guide-name">Loading…</h2>
+      <p id="guide-city"></p>
+      <p>Share your experience with this guide</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="review-form">
+    <h3>Add Your Review</h3>
+    <label>Your Name</label>
+    <input type="text" id="rev-username" placeholder="Your name…" required>
+
+    <label>Your Rating</label>
+    <div class="stars" id="star-input">
+      <!-- JS will inject stars -->
+    </div>
+
+    <label>Your Review</label>
+    <textarea id="rev-comment" placeholder="Write your thoughts…" rows="4" required></textarea>
+
+    <button class="submit-review" id="submitReview">Submit Review</button>
+  </div>
+
+  <h3>Previous Reviews</h3>
+  <div id="reviews-list" class="reviews-list"></div>
+  <p id="review-msg" class="success-msg"></p>
+
+  <a class="back-link" href="guides.html">← Back to Guides</a>
+</section>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const guideId = params.get("guideId");
+  const city = params.get("city");
+
+  let guide = null;
+
+  function loadGuide() {
+    fetch(`http://localhost:5000/api/guides/${guideId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data || data.error) return alert("Guide not found");
+        guide = data;
+        document.getElementById("guide-name").textContent = guide.name;
+        document.getElementById("guide-city").textContent = guide.city;
+        document.getElementById("guide-img").src = guide.image || '';
+      })
+      .catch(err => {
+        console.error("Guide fetch error:", err);
+        alert("Error loading guide.");
+      });
+  }
+
+  // star input logic
+  const starInput = document.getElementById("star-input");
+  for (let i = 1; i <= 5; i++) {
+    const span = document.createElement("span");
+    span.textContent = "☆";
+    span.dataset.val = i;
+    span.addEventListener("click", () => {
+      document.querySelectorAll("#star-input span").forEach(s => {
+        s.textContent = s.dataset.val <= i ? "★" : "☆";
+      });
+    });
+    starInput.appendChild(span);
+  }
+
+  function loadReviews() {
+    fetch(`http://localhost:5000/api/reviews/guides?guideId=${encodeURIComponent(guideId)}`)
+      .then(r => r.json())
+      .then(arr => {
+        const container = document.getElementById("reviews-list");
+        container.innerHTML = "";
+        arr.forEach(r => {
+          const div = document.createElement("div");
+          div.className = "review-item";
+          const stars = "★".repeat(r.stars) + "☆".repeat(5 - r.stars);
+          div.innerHTML = `
+            <strong>${r.user?.username || "Anonymous"}</strong>
+            <span class="review-date">${new Date(r.createdAt).toLocaleDateString()}</span>
+            <p class="rating-stars">${stars}</p>
+            <p>${r.comment}</p>
+          `;
+          container.appendChild(div);
+        });
+      });
+  }
+
+  document.getElementById("submitReview").onclick = () => {
+    const username = document.getElementById("rev-username").value.trim();
+    const comment = document.getElementById("rev-comment").value.trim();
+    const stars = [...document.querySelectorAll("#star-input span")].filter(s => s.textContent === "★").length;
+
+    if (!username || !comment || stars === 0) return alert("Fill all fields and select rating.");
+
+    fetch(`http://localhost:5000/api/reviews/guides`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user: localStorage.getItem("userId"),
+        guide: guideId,
+        stars,
+        comment
+      })
+    }).then(() => {
+      document.getElementById("rev-comment").value = "";
+      loadReviews();
+      document.getElementById("review-msg").textContent = "✅ Review submitted!";
+    });
+  };
+
+  loadGuide();
+  loadReviews();
+</script>
+</body>
+</html>

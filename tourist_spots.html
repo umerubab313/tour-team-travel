@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tourist Spots - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">Tour Team</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="hotels.html">Hotels</a></li>
+        <li><a href="restaurants.html">Restaurants</a></li>
+        <li><a href="guides.html">Guides</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero-section">
+    <div class="overlay">
+      <h1 id="city-title">Top Tourist Spots in City</h1>
+      <p>Discover the must-visit attractions in the city</p>
+    </div>
+  </section>
+
+  <!-- Sorting -->
+  <section class="sort-section container">
+    <label for="sort-select">Sort by:</label>
+    <select id="sort-select">
+      <option value="default">Default</option>
+      <option value="az">A - Z</option>
+      <option value="rating">Rating</option>
+    </select>
+  </section>
+
+  <!-- Tourist Spot Cards -->
+  <section class="listing-section">
+    <div class="container cards-grid" id="spots-container">
+      <!-- Cards will be injected here -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <p><strong>Tour Team</strong><br/>Your trusted travel companion for discovering the world's most beautiful destinations.<br/>© 2025 Tour Team. All rights reserved.</p>
+    </div>
+  </footer>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city') || 'Paris';
+
+  document.getElementById('city-title').textContent = `Top Tourist Spots in ${city}`;
+  document.getElementById('hero-section').style.backgroundImage = `url('https://source.unsplash.com/1600x600/?${city},tourist')`;
+
+  const spotsContainer = document.getElementById('spots-container');
+  const sortSelect = document.getElementById('sort-select');
+  let spots = [];
+
+  function renderSpots(data) {
+    spotsContainer.innerHTML = '';
+    data.forEach(spot => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${spot.image || 'https://via.placeholder.com/400x250'}" alt="${spot.name}" />
+        <div class="card-body">
+          <h3>${spot.name}</h3>
+          <p class="rating">⭐ ${spot.rating || '4.0'}</p>
+          <p>${spot.description || 'No description provided.'}</p>
+        </div>
+      `;
+      spotsContainer.appendChild(card);
+    });
+  }
+
+  function sortAndRender(criteria) {
+    let sorted = [...spots];
+    if (criteria === 'az') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (criteria === 'rating') {
+      sorted.sort((a, b) => b.rating - a.rating);
+    }
+    renderSpots(sorted);
+  }
+
+  sortSelect.addEventListener('change', e => sortAndRender(e.target.value));
+
+  async function loadSpots() {
+    try {
+      const res = await fetch(`http://localhost:5000/api/spots?city=${encodeURIComponent(city)}`);
+      spots = await res.json();
+      renderSpots(spots);
+    } catch (err) {
+      spotsContainer.innerHTML = '<p>Unable to load tourist spots. Please try again later.</p>';
+    }
+  }
+
+  loadSpots();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analytics - Admin - Tour Team</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+<div class="admin-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>Tour Team</h2>
+    <span class="toggle-btn" onclick="toggleSidebar()">✖</span>
+  </div>
+  <ul class="sidebar-links">
+    <li><a href="adminDashboard.html">Dashboard</a></li>
+    <li><a href="adminAddHotels.html">Add Hotels</a></li>
+    <li><a href="adminAddRestaurants.html">Add Restaurants</a></li>
+    <li><a href="adminAddGuides.html">Add Guides</a></li>
+    <li><a href="adminAddSpots.html">Add Tourist Spots</a></li>
+    <li><a href="adminBookings.html">Bookings</a></li>
+    <li><a href="adminAnalytics.html">Analytics</a></li>
+    <li><a href="adminEarnings.html">Earnings</a></li>
+  </ul>
+</div>
+
+<!-- Persistent Toggle Button -->
+<button id="openSidebar" class="open-sidebar-btn" onclick="toggleSidebar()">☰</button>
+
+
+  <!-- Main Content -->
+  <main class="analytics-dashboard">
+    <h2>Top Booked and Rated Listings</h2>
+
+    <div class="charts-container">
+
+      <!-- Hotel Charts -->
+      <div class="chart-card">
+        <h3>Top 5 Booked Hotels</h3>
+        <canvas id="hotelBookingsChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Top 5 Rated Hotels</h3>
+        <canvas id="hotelRatingsChart"></canvas>
+      </div>
+
+      <!-- Restaurant Charts -->
+      <div class="chart-card">
+        <h3>Top 5 Booked Restaurants</h3>
+        <canvas id="restaurantBookingsChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Top 5 Rated Restaurants</h3>
+        <canvas id="restaurantRatingsChart"></canvas>
+      </div>
+
+      <!-- Guide Charts -->
+      <div class="chart-card">
+        <h3>Top 5 Booked Guides</h3>
+        <canvas id="guideBookingsChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Top 5 Rated Guides</h3>
+        <canvas id="guideRatingsChart"></canvas>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+
+      function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+
+    const openBtn = document.getElementById('openSidebar');
+    if (sidebar.classList.contains('collapsed')) {
+      openBtn.style.display = 'block';
+    } else {
+      openBtn.style.display = 'none';
+    }
+  }
+
+  // Hide the button initially
+  window.onload = () => {
+    document.getElementById('openSidebar').style.display = 'none';
+  };
+  
+    async function fetchDataAndRenderCharts() {
+      try {
+        const response = await fetch('http://localhost:5000/api/admin/analytics');
+        const data = await response.json();
+
+        // Hotel Bookings
+        new Chart(document.getElementById('hotelBookingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topBookedHotels.map(h => h.name),
+            datasets: [{
+              label: 'Bookings',
+              data: data.topBookedHotels.map(h => h.bookings),
+              backgroundColor: '#a1c4fd'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Hotel Ratings
+        new Chart(document.getElementById('hotelRatingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topRatedHotels.map(h => h.name),
+            datasets: [{
+              label: 'Rating',
+              data: data.topRatedHotels.map(h => h.rating),
+              backgroundColor: '#c2e9fb'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Restaurant Bookings
+        new Chart(document.getElementById('restaurantBookingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topBookedRestaurants.map(r => r.name),
+            datasets: [{
+              label: 'Bookings',
+              data: data.topBookedRestaurants.map(r => r.bookings),
+              backgroundColor: '#fbc2eb'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Restaurant Ratings
+        new Chart(document.getElementById('restaurantRatingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topRatedRestaurants.map(r => r.name),
+            datasets: [{
+              label: 'Rating',
+              data: data.topRatedRestaurants.map(r => r.rating),
+              backgroundColor: '#a6c1ee'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Guide Bookings
+        new Chart(document.getElementById('guideBookingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topBookedGuides.map(g => g.name),
+            datasets: [{
+              label: 'Bookings',
+              data: data.topBookedGuides.map(g => g.bookings),
+              backgroundColor: '#d4fc79'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Guide Ratings
+        new Chart(document.getElementById('guideRatingsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.topRatedGuides.map(g => g.name),
+            datasets: [{
+              label: 'Rating',
+              data: data.topRatedGuides.map(g => g.rating),
+              backgroundColor: '#96e6a1'
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+      } catch (err) {
+        console.error('Error loading analytics:', err);
+      }
+    }
+
+    fetchDataAndRenderCharts();
+  </script>
+
+</body>
+</html>

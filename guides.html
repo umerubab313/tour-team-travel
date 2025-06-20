@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tour Guides - Tour Team</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">Tour Team</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="restaurants.html">Restaurants</a></li>
+        <li><a href="tourist_spots.html">Tourist Spots</a></li>
+        <li><a href="guides.html">Guides</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero-section">
+    <div class="overlay">
+      <h1 id="city-title">The Best Tour Guides in City</h1>
+      <p>Connect with knowledgeable local guides</p>
+    </div>
+  </section>
+
+  <!-- Sorting -->
+  <section class="sort-section container">
+    <label for="sort-select">Sort by:</label>
+    <select id="sort-select">
+      <option value="default">Default</option>
+      <option value="az">A - Z</option>
+      <option value="rating">Rating</option>
+    </select>
+  </section>
+
+  <!-- Guide Cards -->
+  <section class="listing-section">
+    <div class="container cards-grid" id="guides-container">
+      <!-- Cards will be injected here -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <p><strong>Tour Team</strong><br/>Your trusted travel companion for discovering the world's most beautiful destinations.<br/>© 2025 Tour Team. All rights reserved.</p>
+    </div>
+  </footer>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city') || 'Paris';
+
+  document.getElementById('city-title').textContent = `The Best Tour Guides in ${city}`;
+  document.getElementById('hero-section').style.backgroundImage = `url('https://source.unsplash.com/1600x600/?${city},guide')`;
+
+  const guidesContainer = document.getElementById('guides-container');
+  const sortSelect = document.getElementById('sort-select');
+  let guides = [];
+
+  function renderGuides(data) {
+    guidesContainer.innerHTML = '';
+    data.forEach(guide => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${guide.image || 'https://via.placeholder.com/400x250'}" alt="${guide.name}" />
+        <div class="card-body">
+          <h3>${guide.name}</h3>
+          <p class="rating">⭐ ${guide.rating || '4.0'}</p>
+          <p>${guide.description || 'No description provided.'}</p>
+          <p><strong>Language:</strong> ${guide.language || 'English'}</p>
+          <p class="price">€${guide.feePerTrip || '100'}/trip</p>
+          <a href="#" class="book-button" onclick="startBooking('${guide._id}', 'guide')">Book Now</a>
+          <div class="review-link">
+            <a href="reviewGuides.html?guideId=${guide._id}">Add Your Review</a>
+          </div>
+        </div>
+      `;
+      guidesContainer.appendChild(card);
+    });
+  }
+
+  function sortAndRender(criteria) {
+    let sorted = [...guides];
+    if (criteria === 'az') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (criteria === 'rating') {
+      sorted.sort((a, b) => b.rating - a.rating);
+    }
+    renderGuides(sorted);
+  }
+
+  function startBooking(id, type) {
+    localStorage.setItem('pendingBookingType', type);
+    localStorage.setItem('pendingBookingId', id);
+    localStorage.setItem('pendingCity', city);
+    window.location.href = 'auth.html';
+  }
+
+  sortSelect.addEventListener('change', e => sortAndRender(e.target.value));
+
+  async function loadGuides() {
+    try {
+      const res = await fetch(`http://localhost:5000/api/guides?city=${encodeURIComponent(city)}`);
+      guides = await res.json();
+      renderGuides(guides);
+    } catch (err) {
+      guidesContainer.innerHTML = '<p>Unable to load guides. Please try again later.</p>';
+    }
+  }
+
+  loadGuides();
+</script>
+
+</body>
+</html>
